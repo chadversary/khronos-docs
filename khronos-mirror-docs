@@ -1,0 +1,197 @@
+#!/bin/bash
+
+set -e
+
+kw_prog_name="$(basename $0)"
+kw_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/khronos-docs"
+
+# These vars are set in ~/.config/intel-linux-docs/config.
+DOCDIR=
+PREHOOK=
+POSTHOOK=
+
+function kw_print_help() {
+    echo "NAME"
+    echo "    $kw_prog_name - mirror documentation on Khronos websites"
+    echo ""
+    echo "SYNOPSIS"
+    echo "    $kw_prog_name [-h|--help] <all|egl|opengl|opengles>"
+}
+
+function kw_fatal_error() {
+    echo "error: $kw_prog_name: $@"
+    exit 1
+}
+
+function kw_usage_error() {
+    echo "usage error: $kw_prog_name"
+    echo
+    kw_print_help
+    exit 1
+}
+
+function kw_load_config() {
+    local conf_file="$kw_config_dir/conf"
+    local example_file="$conf_file.example"
+
+    # Write out example file.
+    mkdir -p "$kw_config_dir"
+    cat > "$example_file" <<-EOF
+		#DOCDIR="\$HOME/doc/khronos"
+		#PREHOOK=
+		#POSTHOOK=
+		EOF
+
+    if [[ -r "$conf_file" ]]; then
+        source "$conf_file"
+    fi
+
+    # Set defaults for config vars.
+    DOCDIR="${DOCDIR:-$HOME/doc/khronos}"
+}
+
+function kw_run_prehook() {
+    if [[ "$PREHOOK" ]]; then
+        cd "$kw_config_dir"
+        "$PREHOOK" "$@"
+    fi
+}
+
+function kw_run_posthook() {
+    if [[ "$POSTHOOK" ]]; then
+        cd "$kw_config_dir"
+        "$POSTHOOK" "$@"
+    fi
+}
+
+function kw_mirror_egl() {
+    local prefix="$DOCDIR/egl"
+
+    kw_run_prehook egl
+
+    # Exclude the manpages in /registry/egl/sdk.
+    wget \
+        --mirror \
+        --no-parent \
+        --directory-prefix="$prefix/registry" \
+        --no-host-directories \
+        --cut-dirs=2 \
+        -X /registry/egl/sdk \
+        http://www.khronos.org/registry/egl/
+
+    wget \
+        --mirror \
+        --no-parent \
+        --directory-prefix="$prefix/quick-reference" \
+        --no-host-directories \
+        --cut-dirs=1 \
+        http://www.khronos.org/files/egl-1-4-quick-reference-card.pdf
+
+    kw_run_posthook egl
+}
+
+function kw_mirror_opengl() {
+    local prefix="$DOCDIR/opengl"
+
+    kw_run_prehook opengl
+
+    wget \
+        --mirror \
+        --no-parent \
+        --directory-prefix="$prefix" \
+        --no-host-directories \
+        -I registry/ \
+        http://www.opengl.org/registry/
+
+    for api in \
+            opengl \
+            opengl41 \
+            opengl42 \
+            opengl43
+    do
+        wget \
+            --mirror \
+            --no-parent \
+            --directory-prefix="$prefix/quick-reference" \
+            --no-host-directories \
+            --cut-dirs=1 \
+            http://www.khronos.org/files/$api-quick-reference-card.pdf
+    done
+
+    mv "$prefix/quick-reference/opengl-quick-reference.pdf" \
+       "$prefix/quick-reference/opengl33-quick-reference.pdf"
+
+    kw_run_posthook opengl
+}
+
+function kw_mirror_opengles() {
+    local prefix="$DOCDIR/opengles"
+
+    kw_run_prehook opengles
+
+    wget \
+        --mirror \
+        --no-parent \
+        --directory-prefix="$prefix/registry" \
+        --no-host-directories \
+        --cut-dirs=2 \
+        -I /registry/gles/ \
+        http://www.khronos.org/registry/gles/
+
+    wget \
+        --mirror \
+        --no-parent \
+        --directory-prefix="$prefix/quick-reference" \
+        --no-host-directories \
+        --cut-dirs=1 \
+        http://www.khronos.org/files/opengles3-quick-reference-card.pdf
+
+    kw_run_posthook opengles
+}
+
+# ----------------------------------------------
+# main
+# ----------------------------------------------
+
+if [[ $# -eq 0 ]]; then
+    kw_usage_error
+fi
+
+if [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]]; then
+    kw_print_help
+    exit
+fi
+
+for x in "$@"; do
+    case "$x" in
+        "all"|"egl"|"opengl"|"opengles")
+            ;;
+        *)
+            kw_usage_error
+            ;;
+    esac
+done
+
+kw_load_config
+
+for api in "$@"; do
+    case "$1" in
+        "egl")
+            kw_mirror_egl
+            ;;
+        "opengl")
+            kw_mirror_opengl
+            ;;
+        "opengles")
+            kw_mirror_opengles
+            ;;
+        "all")
+            kw_mirror_egl
+            kw_mirror_opengl
+            kw_mirror_opengles
+            ;;
+        *)
+            kw_usage_error
+            ;;
+    esac
+done
