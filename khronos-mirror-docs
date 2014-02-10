@@ -118,8 +118,8 @@ function kw_mirror_opengl() {
             http://www.khronos.org/files/$api-quick-reference-card.pdf
     done
 
-    mv "$prefix/quick-reference/opengl-quick-reference.pdf" \
-       "$prefix/quick-reference/opengl32-quick-reference.pdf"
+    ln -f "$prefix/quick-reference/opengl-quick-reference.pdf" \
+          "$prefix/quick-reference/opengl32-quick-reference.pdf"
 
     kw_run_posthook opengl
 }
