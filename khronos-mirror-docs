@@ -119,7 +119,7 @@ function kw_mirror_opengl() {
     done
 
     mv "$prefix/quick-reference/opengl-quick-reference.pdf" \
-       "$prefix/quick-reference/opengl33-quick-reference.pdf"
+       "$prefix/quick-reference/opengl32-quick-reference.pdf"
 
     kw_run_posthook opengl
 }
