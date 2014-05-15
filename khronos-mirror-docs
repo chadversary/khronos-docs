@@ -163,6 +163,23 @@ function kw_mirror_opengles() {
     kw_run_posthook opengles
 }
 
+function kw_mirror_webgl() {
+    local prefix="$DOCDIR/webgl"
+
+    kw_run_prehook webgl
+
+    wget \
+        --mirror \
+        --no-parent \
+        --directory-prefix="$prefix/quick-reference" \
+        --no-host-directories \
+        --cut-dirs=2 \
+        http://www.khronos.org/files/webgl/webgl-reference-card-1_0.pdf
+
+    kw_run_posthook webgl
+}
+
+
 # ----------------------------------------------
 # main
 # ----------------------------------------------
@@ -178,7 +195,7 @@ fi
 
 for x in "$@"; do
     case "$x" in
-        "all"|"egl"|"opengl"|"opengles")
+        "all"|"egl"|"opengl"|"opengles"|"webgl")
             ;;
         *)
             kw_usage_error
@@ -198,6 +215,9 @@ for api in "$@"; do
             ;;
         "opengles")
             kw_mirror_opengles
+            ;;
+        "webgl")
+            kw_mirror_webgl
             ;;
         "all")
             kw_mirror_egl
