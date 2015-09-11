@@ -55,7 +55,8 @@ function usage_error() {
     echo "usage error: $prog_name"
     echo
     print_help
-    exit 1
+
+    exit 129 # same as git
 } >&2
 
 function init_config() {
