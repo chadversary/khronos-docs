@@ -6,8 +6,8 @@ prog_name="${0##*/}"
 config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/khronos-docs"
 config_file="$config_dir/conf"
 
-# These vars are set in the config file.
-DOCDIR=
+# Set defaults for config vars.
+DOCDIR="$HOME/doc/khronos"
 PREHOOK=
 POSTHOOK=
 
@@ -46,9 +46,6 @@ function load_config() {
     elif ! [[ -e "$config_file" ]]; then
         init_config
     fi
-
-    # Set defaults for config vars.
-    DOCDIR="${DOCDIR:-$HOME/doc/khronos}"
 }
 
 function run_prehook() {
