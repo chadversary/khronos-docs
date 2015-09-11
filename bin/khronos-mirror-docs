@@ -31,17 +31,20 @@ function usage_error() {
     exit 1
 }
 
-function load_config() {
-    # Write out example file.
+function init_config() {
     mkdir -p "$config_dir"
-    cat > "${config_file}.example" <<-EOF
-		#DOCDIR="\$HOME/doc/khronos"
-		#PREHOOK=
-		#POSTHOOK=
-		EOF
+    cat >"$config_file" <<EOF
+#DOCDIR="\$HOME/doc/khronos"
+#PREHOOK=
+#POSTHOOK=
+EOF
+}
 
+function load_config() {
     if [[ -r "$config_file" ]]; then
         source "$config_file"
+    elif ! [[ -e "$config_file" ]]; then
+        init_config
     fi
 
     # Set defaults for config vars.
