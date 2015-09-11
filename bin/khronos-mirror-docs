@@ -2,7 +2,7 @@
 
 set -e
 
-kw_prog_name="$(basename $0)"
+kw_prog_name="${0##*/}"
 kw_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/khronos-docs"
 
 # These vars are set in ~/.config/intel-linux-docs/config.
