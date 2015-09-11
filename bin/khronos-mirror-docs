@@ -89,6 +89,16 @@ function run_posthook() {
     fi
 }
 
+function do_wget() {
+    wget \
+        --limit-rate=20K \
+        --timestamping \
+        --mirror \
+        --no-parent \
+        --no-host-directories \
+        "$@"
+}
+
 function mirror_egl() {
     local prefix="$DOCDIR/egl"
     local quickref_urls
@@ -96,12 +106,8 @@ function mirror_egl() {
     run_prehook egl
 
     # Exclude the manpages in /registry/egl/sdk.
-    wget \
-        --limit-rate=20K \
-        --mirror \
-        --no-parent \
+    do_wget \
         --directory-prefix="$prefix/registry" \
-        --no-host-directories \
         --cut-dirs=2 \
         -X /registry/egl/sdk \
         http://www.khronos.org/registry/egl/
@@ -111,11 +117,8 @@ function mirror_egl() {
         sed -n -e 's/^.*value="\/\(files\/egl.*reference.*\.pdf\)".*$/https:\/\/www.khronos.org\/\1/p'
     )
 
-    wget \
-        --limit-rate=20K \
-        --timestamping \
+    do_wget \
         --directory-prefix="$prefix/quick-reference" \
-        --no-host-directories \
         --cut-dirs=1 \
         $quickref_urls
 
@@ -128,12 +131,8 @@ function mirror_opengl() {
 
     run_prehook opengl
 
-    wget \
-        --limit-rate=20K \
-        --mirror \
-        --no-parent \
+    do_wget \
         --directory-prefix="$prefix" \
-        --no-host-directories \
         -I registry/ \
         http://www.opengl.org/registry/
 
@@ -142,11 +141,8 @@ function mirror_opengl() {
         sed -n -e 's/^.*value="\/\(files\/opengl.*reference.*\.pdf\)".*$/https:\/\/www.khronos.org\/\1/p'
     )
 
-    wget \
-        --limit-rate=20K \
-        --timestamping \
+    do_wget \
         --directory-prefix="$prefix/quick-reference" \
-        --no-host-directories \
         --cut-dirs=1 \
         $quickref_urls
 
@@ -162,12 +158,8 @@ function mirror_opengles() {
 
     run_prehook opengles
 
-    wget \
-        --limit-rate=20K \
-        --mirror \
-        --no-parent \
+    do_wget \
         --directory-prefix="$prefix/registry" \
-        --no-host-directories \
         --cut-dirs=2 \
         -I /registry/gles/ \
         http://www.khronos.org/registry/gles/
@@ -177,11 +169,8 @@ function mirror_opengles() {
         sed -n -e 's/^.*value="\/\(files\/opengles.*reference.*\.pdf\)".*$/https:\/\/www.khronos.org\/\1/p'
     )
 
-    wget \
-        --limit-rate=20K \
-        --timestamping \
+    do_wget \
         --directory-prefix="$prefix/quick-reference" \
-        --no-host-directories \
         --cut-dirs=1 \
         $quickref_urls
 
@@ -199,11 +188,8 @@ function mirror_webgl() {
         sed -n -e 's/^.*value="\/\(files\/webgl.*reference.*\.pdf\)".*$/https:\/\/www.khronos.org\/\1/p'
     )
 
-    wget \
-        --limit-rate=20K \
-        --timestamping \
+    do_wget \
         --directory-prefix="$prefix/quick-reference" \
-        --no-host-directories \
         --cut-dirs=1 \
         $quickref_urls
 
