@@ -26,8 +26,10 @@
 
 set -e
 
+: ${XDG_CONFIG_HOME:=$HOME/.config}
+
 prog_name="${0##*/}"
-config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/khronos-docs"
+config_dir="$XDG_CONFIG_HOME/khronos-docs"
 config_file="$config_dir/conf"
 
 # Set defaults for config vars.
