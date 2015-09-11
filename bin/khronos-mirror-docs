@@ -49,14 +49,14 @@ function print_help() {
 function fatal_error() {
     echo "error: $prog_name: $@"
     exit 1
-}
+} >&2
 
 function usage_error() {
     echo "usage error: $prog_name"
     echo
     print_help
     exit 1
-}
+} >&2
 
 function init_config() {
     mkdir -p "$config_dir"
