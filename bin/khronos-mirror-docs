@@ -31,7 +31,7 @@ set -o pipefail
 
 prog_name="${0##*/}"
 config_dir="$XDG_CONFIG_HOME/khronos-docs"
-config_file="$config_dir/conf"
+config_file="$config_dir/config"
 
 # Set defaults for config vars.
 DOCDIR="$HOME/doc/khronos"
