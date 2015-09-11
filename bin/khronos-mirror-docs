@@ -51,14 +51,14 @@ function load_config() {
 function run_prehook() {
     if [[ "$PREHOOK" ]]; then
         cd "$config_dir"
-        "$PREHOOK" "$@"
+        ("$PREHOOK" "$@")
     fi
 }
 
 function run_posthook() {
     if [[ "$POSTHOOK" ]]; then
         cd "$config_dir"
-        "$POSTHOOK" "$@"
+        ("$POSTHOOK" "$@")
     fi
 }
 
