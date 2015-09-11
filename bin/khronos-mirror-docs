@@ -179,53 +179,55 @@ function kw_mirror_webgl() {
     kw_run_posthook webgl
 }
 
+function main() {
+    local x
+    local api
 
-# ----------------------------------------------
-# main
-# ----------------------------------------------
+    if [[ $# -eq 0 ]]; then
+        kw_usage_error
+    fi
 
-if [[ $# -eq 0 ]]; then
-    kw_usage_error
-fi
+    if [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]]; then
+        kw_print_help
+        exit
+    fi
 
-if [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]]; then
-    kw_print_help
-    exit
-fi
+    for x in "$@"; do
+        case "$x" in
+            "all"|"egl"|"opengl"|"opengles"|"webgl")
+                ;;
+            *)
+                kw_usage_error
+                ;;
+        esac
+    done
 
-for x in "$@"; do
-    case "$x" in
-        "all"|"egl"|"opengl"|"opengles"|"webgl")
-            ;;
-        *)
-            kw_usage_error
-            ;;
-    esac
-done
+    kw_load_config
 
-kw_load_config
+    for api in "$@"; do
+        case "$1" in
+            "egl")
+                kw_mirror_egl
+                ;;
+            "opengl")
+                kw_mirror_opengl
+                ;;
+            "opengles")
+                kw_mirror_opengles
+                ;;
+            "webgl")
+                kw_mirror_webgl
+                ;;
+            "all")
+                kw_mirror_egl
+                kw_mirror_opengl
+                kw_mirror_opengles
+                ;;
+            *)
+                kw_usage_error
+                ;;
+        esac
+    done
+}
 
-for api in "$@"; do
-    case "$1" in
-        "egl")
-            kw_mirror_egl
-            ;;
-        "opengl")
-            kw_mirror_opengl
-            ;;
-        "opengles")
-            kw_mirror_opengles
-            ;;
-        "webgl")
-            kw_mirror_webgl
-            ;;
-        "all")
-            kw_mirror_egl
-            kw_mirror_opengl
-            kw_mirror_opengles
-            ;;
-        *)
-            kw_usage_error
-            ;;
-    esac
-done
+main "$@"
