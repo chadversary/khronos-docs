@@ -91,11 +91,13 @@ function run_posthook() {
 
 function mirror_egl() {
     local prefix="$DOCDIR/egl"
+    local quickref_urls
 
     run_prehook egl
 
     # Exclude the manpages in /registry/egl/sdk.
     wget \
+        --limit-rate=20K \
         --mirror \
         --no-parent \
         --directory-prefix="$prefix/registry" \
@@ -104,24 +106,30 @@ function mirror_egl() {
         -X /registry/egl/sdk \
         http://www.khronos.org/registry/egl/
 
+    quickref_urls=$(
+        curl https://www.khronos.org/developers/reference-cards |
+        sed -n -e 's/^.*value="\/\(files\/egl.*reference.*\.pdf\)".*$/https:\/\/www.khronos.org\/\1/p'
+    )
+
     wget \
-        --mirror \
-        --no-parent \
+        --limit-rate=20K \
+        --timestamping \
         --directory-prefix="$prefix/quick-reference" \
         --no-host-directories \
         --cut-dirs=1 \
-        http://www.khronos.org/files/egl-1-4-quick-reference-card.pdf
+        $quickref_urls
 
     run_posthook egl
 }
 
 function mirror_opengl() {
     local prefix="$DOCDIR/opengl"
-    local url=
+    local quickref_urls
 
     run_prehook opengl
 
     wget \
+        --limit-rate=20K \
         --mirror \
         --no-parent \
         --directory-prefix="$prefix" \
@@ -129,25 +137,18 @@ function mirror_opengl() {
         -I registry/ \
         http://www.opengl.org/registry/
 
-    local quick_reference_urls=(
-        http://www.khronos.org/files/opengl-quick-reference-card.pdf # opengl32
-        http://www.opengl.org/sdk/docs/reference_card/opengl40-quick-reference-card.pdf
-        http://www.opengl.org/sdk/docs/reference_card/opengl41-quick-reference-card.pdf
-        http://www.opengl.org/sdk/docs/reference_card/opengl42-quick-reference-card.pdf
-        http://www.opengl.org/sdk/docs/reference_card/opengl42-core-quick-reference-card.pdf
-        http://www.opengl.org/sdk/docs/reference_card/opengl43-quick-reference-card.pdf
-        http://www.opengl.org/sdk/docs/reference_card/opengl44-quick-reference-card.pdf
+    quickref_urls=$(
+        curl https://www.khronos.org/developers/reference-cards |
+        sed -n -e 's/^.*value="\/\(files\/opengl.*reference.*\.pdf\)".*$/https:\/\/www.khronos.org\/\1/p'
     )
 
-    for url in ${quick_reference_urls[@]}; do
-        wget \
-            --mirror \
-            --no-parent \
-            --directory-prefix="$prefix/quick-reference" \
-            --no-host-directories \
-            --no-directories \
-            "$url"
-    done
+    wget \
+        --limit-rate=20K \
+        --timestamping \
+        --directory-prefix="$prefix/quick-reference" \
+        --no-host-directories \
+        --cut-dirs=1 \
+        $quickref_urls
 
     ln -f "$prefix/quick-reference/opengl-quick-reference.pdf" \
           "$prefix/quick-reference/opengl32-quick-reference.pdf"
@@ -157,10 +158,12 @@ function mirror_opengl() {
 
 function mirror_opengles() {
     local prefix="$DOCDIR/opengles"
+    local quickref_urls
 
     run_prehook opengles
 
     wget \
+        --limit-rate=20K \
         --mirror \
         --no-parent \
         --directory-prefix="$prefix/registry" \
@@ -169,37 +172,40 @@ function mirror_opengles() {
         -I /registry/gles/ \
         http://www.khronos.org/registry/gles/
 
-    wget \
-        --mirror \
-        --no-parent \
-        --directory-prefix="$prefix/quick-reference" \
-        --no-host-directories \
-        --cut-dirs=4 \
-        http://www.khronos.org/opengles/sdk/docs/reference_cards/OpenGL-ES-2_0-Reference-card.pdf
+    quickref_urls=$(
+        curl https://www.khronos.org/developers/reference-cards |
+        sed -n -e 's/^.*value="\/\(files\/opengles.*reference.*\.pdf\)".*$/https:\/\/www.khronos.org\/\1/p'
+    )
 
     wget \
-        --mirror \
-        --no-parent \
+        --limit-rate=20K \
+        --timestamping \
         --directory-prefix="$prefix/quick-reference" \
         --no-host-directories \
         --cut-dirs=1 \
-        http://www.khronos.org/files/opengles3-quick-reference-card.pdf
+        $quickref_urls
 
     run_posthook opengles
 }
 
 function mirror_webgl() {
     local prefix="$DOCDIR/webgl"
+    local quickref_urls
 
     run_prehook webgl
 
+    quickref_urls=$(
+        curl https://www.khronos.org/developers/reference-cards |
+        sed -n -e 's/^.*value="\/\(files\/webgl.*reference.*\.pdf\)".*$/https:\/\/www.khronos.org\/\1/p'
+    )
+
     wget \
-        --mirror \
-        --no-parent \
+        --limit-rate=20K \
+        --timestamping \
         --directory-prefix="$prefix/quick-reference" \
         --no-host-directories \
-        --cut-dirs=2 \
-        http://www.khronos.org/files/webgl/webgl-reference-card-1_0.pdf
+        --cut-dirs=1 \
+        $quickref_urls
 
     run_posthook webgl
 }
