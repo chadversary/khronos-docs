@@ -2,40 +2,40 @@
 
 set -e
 
-kw_prog_name="${0##*/}"
-kw_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/khronos-docs"
+prog_name="${0##*/}"
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/khronos-docs"
 
 # These vars are set in ~/.config/intel-linux-docs/config.
 DOCDIR=
 PREHOOK=
 POSTHOOK=
 
-function kw_print_help() {
+function print_help() {
     echo "NAME"
-    echo "    $kw_prog_name - mirror documentation on Khronos websites"
+    echo "    $prog_name - mirror documentation on Khronos websites"
     echo ""
     echo "SYNOPSIS"
-    echo "    $kw_prog_name [-h|--help] <all|egl|opengl|opengles>"
+    echo "    $prog_name [-h|--help] <all|egl|opengl|opengles>"
 }
 
-function kw_fatal_error() {
-    echo "error: $kw_prog_name: $@"
+function fatal_error() {
+    echo "error: $prog_name: $@"
     exit 1
 }
 
-function kw_usage_error() {
-    echo "usage error: $kw_prog_name"
+function usage_error() {
+    echo "usage error: $prog_name"
     echo
-    kw_print_help
+    print_help
     exit 1
 }
 
-function kw_load_config() {
-    local conf_file="$kw_config_dir/conf"
+function load_config() {
+    local conf_file="$config_dir/conf"
     local example_file="$conf_file.example"
 
     # Write out example file.
-    mkdir -p "$kw_config_dir"
+    mkdir -p "$config_dir"
     cat > "$example_file" <<-EOF
 		#DOCDIR="\$HOME/doc/khronos"
 		#PREHOOK=
@@ -50,24 +50,24 @@ function kw_load_config() {
     DOCDIR="${DOCDIR:-$HOME/doc/khronos}"
 }
 
-function kw_run_prehook() {
+function run_prehook() {
     if [[ "$PREHOOK" ]]; then
-        cd "$kw_config_dir"
+        cd "$config_dir"
         "$PREHOOK" "$@"
     fi
 }
 
-function kw_run_posthook() {
+function run_posthook() {
     if [[ "$POSTHOOK" ]]; then
-        cd "$kw_config_dir"
+        cd "$config_dir"
         "$POSTHOOK" "$@"
     fi
 }
 
-function kw_mirror_egl() {
+function mirror_egl() {
     local prefix="$DOCDIR/egl"
 
-    kw_run_prehook egl
+    run_prehook egl
 
     # Exclude the manpages in /registry/egl/sdk.
     wget \
@@ -87,14 +87,14 @@ function kw_mirror_egl() {
         --cut-dirs=1 \
         http://www.khronos.org/files/egl-1-4-quick-reference-card.pdf
 
-    kw_run_posthook egl
+    run_posthook egl
 }
 
-function kw_mirror_opengl() {
+function mirror_opengl() {
     local prefix="$DOCDIR/opengl"
     local url=
 
-    kw_run_prehook opengl
+    run_prehook opengl
 
     wget \
         --mirror \
@@ -127,13 +127,13 @@ function kw_mirror_opengl() {
     ln -f "$prefix/quick-reference/opengl-quick-reference.pdf" \
           "$prefix/quick-reference/opengl32-quick-reference.pdf"
 
-    kw_run_posthook opengl
+    run_posthook opengl
 }
 
-function kw_mirror_opengles() {
+function mirror_opengles() {
     local prefix="$DOCDIR/opengles"
 
-    kw_run_prehook opengles
+    run_prehook opengles
 
     wget \
         --mirror \
@@ -160,13 +160,13 @@ function kw_mirror_opengles() {
         --cut-dirs=1 \
         http://www.khronos.org/files/opengles3-quick-reference-card.pdf
 
-    kw_run_posthook opengles
+    run_posthook opengles
 }
 
-function kw_mirror_webgl() {
+function mirror_webgl() {
     local prefix="$DOCDIR/webgl"
 
-    kw_run_prehook webgl
+    run_prehook webgl
 
     wget \
         --mirror \
@@ -176,7 +176,7 @@ function kw_mirror_webgl() {
         --cut-dirs=2 \
         http://www.khronos.org/files/webgl/webgl-reference-card-1_0.pdf
 
-    kw_run_posthook webgl
+    run_posthook webgl
 }
 
 function main() {
@@ -184,11 +184,11 @@ function main() {
     local api
 
     if [[ $# -eq 0 ]]; then
-        kw_usage_error
+        usage_error
     fi
 
     if [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]]; then
-        kw_print_help
+        print_help
         exit
     fi
 
@@ -197,34 +197,34 @@ function main() {
             "all"|"egl"|"opengl"|"opengles"|"webgl")
                 ;;
             *)
-                kw_usage_error
+                usage_error
                 ;;
         esac
     done
 
-    kw_load_config
+    load_config
 
     for api in "$@"; do
         case "$1" in
             "egl")
-                kw_mirror_egl
+                mirror_egl
                 ;;
             "opengl")
-                kw_mirror_opengl
+                mirror_opengl
                 ;;
             "opengles")
-                kw_mirror_opengles
+                mirror_opengles
                 ;;
             "webgl")
-                kw_mirror_webgl
+                mirror_webgl
                 ;;
             "all")
-                kw_mirror_egl
-                kw_mirror_opengl
-                kw_mirror_opengles
+                mirror_egl
+                mirror_opengl
+                mirror_opengles
                 ;;
             *)
-                kw_usage_error
+                usage_error
                 ;;
         esac
     done
