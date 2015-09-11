@@ -4,8 +4,9 @@ set -e
 
 prog_name="${0##*/}"
 config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/khronos-docs"
+config_file="$config_dir/conf"
 
-# These vars are set in ~/.config/intel-linux-docs/config.
+# These vars are set in the config file.
 DOCDIR=
 PREHOOK=
 POSTHOOK=
@@ -31,19 +32,16 @@ function usage_error() {
 }
 
 function load_config() {
-    local conf_file="$config_dir/conf"
-    local example_file="$conf_file.example"
-
     # Write out example file.
     mkdir -p "$config_dir"
-    cat > "$example_file" <<-EOF
+    cat > "${config_file}.example" <<-EOF
 		#DOCDIR="\$HOME/doc/khronos"
 		#PREHOOK=
 		#POSTHOOK=
 		EOF
 
-    if [[ -r "$conf_file" ]]; then
-        source "$conf_file"
+    if [[ -r "$config_file" ]]; then
+        source "$config_file"
     fi
 
     # Set defaults for config vars.
