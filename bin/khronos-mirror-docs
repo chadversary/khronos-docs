@@ -239,6 +239,7 @@ function main() {
                 mirror_egl
                 mirror_opengl
                 mirror_opengles
+                mirror_webgl
                 ;;
             *)
                 usage_error
