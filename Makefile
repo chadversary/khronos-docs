@@ -7,6 +7,8 @@ bindir ?= $(exec_prefix)/bin
 datarootdir ?= $(prefix)/share
 docdir ?= $(datarootdir)/doc/$(pkgname)
 
+-include config.mk
+
 .PHONY: all
 all:
 	@
