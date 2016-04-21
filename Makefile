@@ -7,8 +7,8 @@ bindir ?= $(exec_prefix)/bin
 datarootdir ?= $(prefix)/share
 docdir ?= $(datarootdir)/doc/$(pkgname)
 
-.PHONY: build
-build:
+.PHONY: all
+all:
 	@
 
 .PHONY: install
