@@ -15,8 +15,8 @@ all:
 
 .PHONY: install
 install:
-	install -Dm755 bin/khronos-mirror-docs $(DESTDIR)/$(bindir)/khronos-mirror-docs
-	install -Dm644 README.txt $(DESTDIR)/$(docdir)/README.txt
+	install -Dm755 bin/khronos-mirror-docs $(DESTDIR)$(bindir)/khronos-mirror-docs
+	install -Dm644 README.txt $(DESTDIR)$(docdir)/README.txt
 
 .PHONY: clean
 clean:
