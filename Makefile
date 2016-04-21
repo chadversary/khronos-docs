@@ -1,11 +1,11 @@
 pkgname := khronos-docs
 
-DESTDIR ?=
-prefix ?= /usr/local
-exec_prefix ?= $(prefix)
-bindir ?= $(exec_prefix)/bin
-datarootdir ?= $(prefix)/share
-docdir ?= $(datarootdir)/doc/$(pkgname)
+DESTDIR =
+prefix = /usr/local
+exec_prefix = $(prefix)
+bindir = $(exec_prefix)/bin
+datarootdir = $(prefix)/share
+docdir = $(datarootdir)/doc/$(pkgname)
 
 -include config.mk
 
