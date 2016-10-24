@@ -42,7 +42,7 @@ function print_help() {
     echo "    $prog_name - mirror documentation on Khronos websites"
     echo ""
     echo "SYNOPSIS"
-    echo "    $prog_name [-h|--help] <all|egl|opengl|opengles>"
+    echo "    $prog_name [-h|--help] <all|egl|opengl|opengles|webgl>"
 }
 
 function fatal_error() {
